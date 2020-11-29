@@ -31,14 +31,43 @@ local function switchScene(event) -- Change scenes
       composer.gotoScene("scene1") --Title Screen
 end  
 
-local function applyForce(event) -- Function to apply force to the object
- 
-    anim:applyLinearImpulse(0, -15, anim.x, anim.y)
-    print("force applied") --testing
-
+local function onObjectTouch(event)
+    if event.phase == "began" then
+        touching = true           
+    elseif event.phase == "ended" then
+        touching = false
+    anim:applyLinearImpulse(0, -20, anim.x, anim.y)
+    print("linear impulse applied")
+    end
 end
 
-Runtime:addEventListener("tap", applyForce)
+--TESTING MOVEMENT
+
+--[[local funtion EnterFrame(event)
+    if touching == true then
+            timer.performWithDelay( 1000, move)
+    end
+end--]]
+
+--local function applyForce(event) -- Function to apply force to the object
+  
+while (touching == true) do
+    vx, vy = anim:getLinearVelocity()
+    anim:applyForce( 0, vy-20, anim.x, anim.y )
+    print("force applied") --testing
+end
+--[[if(event.phase == "ended") then
+    vx, vy = anim:getLinearVelocity()
+    print(vx, vy)
+    anim:applyLinearImpulse(0, -20, anim.x, anim.y)
+    print("linear impulse applied")
+end--]]
+    
+
+--end
+
+--Runtime:addEventListener("tap", applyForce)
+Runtime:addEventListener("touch", onObjectTouch)
 
 -- "scene:create()"
 function scene:create( event )
@@ -51,7 +80,11 @@ background.y = display.contentCenterY
 sceneGroup:insert(background)
 
  physics.start() --start physics here
- physics.setGravity( 0, 3 )
+ physics.setGravity( 0, 5 )
+
+local ground = display.newRect(display.contentCenterX, display.contentCenterY + 380, 1500, 1) -- Adds a ground object to stop the ship from falling off screen
+ground:setFillColor(0,0,0)
+physics.addBody( ground, "static", { density=1.0, friction=0, bounce=0, isSensor = false } )
  
 local button1 = display.newRect( 300, 700, 100, 75)
 button1:setFillColor(0,1,0)
@@ -61,7 +94,7 @@ sceneGroup:insert(buttontext1)
 button1:addEventListener( "tap", switchScene )
 
 sceneGroup:insert(anim)
-physics.addBody( anim, "dynamic", { density=1.0, friction=0.3, bounce=0.2, isSensor = true } )
+physics.addBody( anim, "dynamic", { density=1.0, friction=0, bounce=0, isSensor = false} )
 anim:setSequence("walking")
 anim.x = display.contentCenterX - 400
 anim.y = display.contentCenterY
