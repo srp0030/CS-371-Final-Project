@@ -22,20 +22,20 @@ function scene:create( event )
 
 local sceneGroup = self.view
 
-local background = display.newImageRect("logo3.png", 1920, 1080)
+local background = display.newImageRect("logo3.png", 1334, 750)
 background.x = display.contentCenterX
 background.y = display.contentCenterY
 sceneGroup:insert(background)
 
 local start = display.newImageRect("start-up.png", 256, 256)
-start.x = 500
-start.y = 875
+start.x = 300
+start.y = 600
 sceneGroup:insert(start)
 start:addEventListener("tap", gameScene)
 
 local help = display.newImageRect("instructions.png", 256, 256)
-help.x = 1400
-help.y = 875
+help.x = 1000
+help.y = 600
 sceneGroup:insert(help)
 help:addEventListener("tap", helpScene)
 
