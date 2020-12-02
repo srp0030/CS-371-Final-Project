@@ -13,6 +13,8 @@ local physics = require( "physics" )
 physics.start() --start physics here
 physics.setGravity( 0, 15 )
 
+local hiddenGroup = display.newGroup();
+
 local soundTable = {
 	shootSound = audio.loadSound('shoot.wav');
 	hitSound = audio.loadSound('hit.wav');
@@ -37,10 +39,11 @@ local ship_sequenceData = {
    {name = "walking", frames = {1}, time = 800, loopCount = 0}
 }
 
-local sheet = ship_sheet;
+local sheet = ship_sheet; 
 local sequenceData = ship_sequenceData;
-local anim = display.newSprite(sheet, sequenceData) --initialize ship sprite
-
+local player = display.newSprite(sheet, sequenceData) --initialize ship sprite
+player.tag = "player"
+player.HP = 3;
 
 local function switchScene(event) -- Change scenes
 
@@ -56,17 +59,32 @@ local function createEnemy (yPos, id)
 	enemy:setFillColor(0,1,0);
     physics.addBody(enemy,"dynamic", {isSensor = true});
     enemy.gravityScale = 0
-	enemy.tag = "badThings";
+	enemy.tag = "enemy";
     enemy.HP = 3;
-    id = id+1
+    enemy:setLinearVelocity( -100, 0 )
+    hiddenGroup:insert(enemy)
+    id = id+1  --increment enemy ID
 
-	enemies[id] = enemy;
+    enemies[id] = enemy;
+    
+    local function enemyProjectile(event)  -- Timer calls function to fire bullets every second
+    print("shoot")
+    local ebullet = display.newCircle(enemy.x-40, enemy.y, 5);
+    physics.addBody(ebullet, "kinematic", {radius=5, isSensor = true} );
+    ebullet:setFillColor(1,0,0);
+    ebullet:setLinearVelocity( -200, 0 )
+    ebullet.tag = "enemyProj"
+    end
+
+timer.performWithDelay(2000, enemyProjectile, -1)
 end
 
 timer.performWithDelay( 5000, createEnemy, -1)
+timer.performWithDelay(6000, enemyProjectile, -1)
+
 
 local function fire (event) -- handles player firing
-    local bullet = display.newCircle(anim.x+40, anim.y, 5);
+    local bullet = display.newCircle(player.x+40, player.y, 5);
     bullet:setFillColor(0,1,0);
     physics.addBody(bullet, "kinematic", {radius=5} );
     bullet.isBullet = true
@@ -78,7 +96,7 @@ local function fire (event) -- handles player firing
         --event.target:removeSelf();
         --event.target=nil;
 
-        if (event.other.tag == "badThings") then
+        if (event.other.tag == "enemy") then
 			 	
 				if (event.other.HP > 1) then
 					event.other.HP = event.other.HP -1;
@@ -95,6 +113,28 @@ local function fire (event) -- handles player firing
     end
     bullet:addEventListener("collision", removeProjectile)
 end
+
+local function playerHealth(event)
+    if(event.other.tag == "enemyProj") then
+
+            if (player.HP > 1) then
+                    event.other:removeSelf(); 
+                    event.other=nil;
+                    player.HP = player.HP -1;
+                    print("hit")
+					audio.play(soundTable['hitSound']);
+            elseif (player.HP == 1) then
+                    event.other:removeSelf(); 
+                    event.other=nil;
+					audio.play(soundTable['explodeSound']);
+                    print("destroyed")
+                    composer.gotoScene("deathScene")
+            end
+    end
+end
+
+player:addEventListener("collision", playerHealth)
+
 
 
 
@@ -136,18 +176,21 @@ local moveColumnTimer = timer.performWithDelay(2, moveColumns, -1)
 
 local function onObjectTouch(event)
     if event.phase == "began" then
-    anim:applyLinearImpulse(0, -60, anim.x, anim.y)
-        print("boost")
+    player:applyLinearImpulse(0, -60, player.x, player.y)
+        --print("boost")
            
     end
 end
 
 Runtime:addEventListener("touch", onObjectTouch)
 
+
 -- "scene:create()"
 function scene:create( event )
 
        local sceneGroup = self.view
+
+       --sceneGroup:insert(enemy)
 
 local background = display.newImageRect( "space_background.png", display.contentWidth, display.contentHeight) 
 background.x = display.contentCenterX
@@ -174,11 +217,11 @@ sceneGroup:insert(button1)
 sceneGroup:insert(buttontext1)
 button1:addEventListener( "tap", switchScene )
 
-sceneGroup:insert(anim)
-physics.addBody( anim, "dynamic", { density=1.0, friction=0, bounce=0, isSensor = false} ) 
-anim:setSequence("walking")
-anim.x = display.contentCenterX - 400
-anim.y = display.contentCenterY
+sceneGroup:insert(player)
+physics.addBody( player, "dynamic", { density=1.0, friction=0, bounce=0, isSensor = false} ) 
+player:setSequence("walking")
+player.x = display.contentCenterX - 400
+player.y = display.contentCenterY
 
 elements = display.newGroup()
 elements.anchorChildren = true
