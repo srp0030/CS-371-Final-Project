@@ -13,7 +13,7 @@ local scene = composer.newScene()
 -- "scene:create()"
 function scene:create( event )
  
-   local sceneGroup = self.view
+local sceneGroup = self.view
  
 local button1 = display.newRect( 300, 1200, 100, 75)
 button1:setFillColor(0,1,0)

@@ -12,24 +12,49 @@ local function helpScene(event)
       composer.gotoScene("scene3") --Help scene
 end
 
+
+
+
+
+
 -- "scene:create()"
 function scene:create( event )
 
 local sceneGroup = self.view
 
-local button1 = display.newRect( 300, 700, 100, 75)
-button1:setFillColor(0,1,0)
-local buttontext1 = display.newText( "Start Game", 300, 700, native.systemFont, 16 )
-sceneGroup:insert(button1)
-sceneGroup:insert(buttontext1)
-button1:addEventListener( "tap", gameScene )
+local background = display.newImageRect("logo3.png", 1920, 1080)
+background.x = display.contentCenterX
+background.y = display.contentCenterY
+sceneGroup:insert(background)
 
-local button2 = display.newRect( 500, 700, 100, 75)
-button2:setFillColor(0,1,0)
-local buttontext2 = display.newText( "How to Play", 500, 700, native.systemFont, 16 )
-sceneGroup:insert(button2)
-sceneGroup:insert(buttontext2)
-button2:addEventListener( "tap", helpScene )
+local start = display.newImageRect("start-up.png", 256, 256)
+start.x = 500
+start.y = 875
+sceneGroup:insert(start)
+start:addEventListener("tap", gameScene)
+
+local help = display.newImageRect("instructions.png", 256, 256)
+help.x = 1400
+help.y = 875
+sceneGroup:insert(help)
+help:addEventListener("tap", helpScene)
+
+
+--local button1 = display.newRect( 700, 800, 300, 175)
+--button1:setFillColor(0,0, 1)
+--local buttontext1 = display.newText( "Start Game", 700, 800, native.systemFont, 55 )
+--buttontext1:setFillColor(0, 1, 0)
+--sceneGroup:insert(button1)
+--sceneGroup:insert(buttontext1)
+--button1:addEventListener( "tap", gameScene )
+
+--local button2 = display.newRect( 1200, 800, 300, 250)
+--button2:setFillColor(0, 0, 1)
+--local buttontext2 = display.newText( "How to Play", 1200, 800, native.systemFont, 55 )
+--buttontext2:setFillColor(0, 1 , 0)
+--sceneGroup:insert(button2)
+--sceneGroup:insert(buttontext2)
+--button2:addEventListener( "tap", helpScene )
 
 end
  

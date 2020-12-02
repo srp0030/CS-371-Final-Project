@@ -192,9 +192,9 @@ function scene:create( event )
 
        --sceneGroup:insert(enemy)
 
-local background = display.newImageRect( "space_background.png", display.contentWidth, display.contentHeight) 
-background.x = display.contentCenterX
-background.y = display.contentCenterY
+local background = display.newImageRect( "space_background.png", 1920, 1080)
+background.x = 1920
+background.y = 1080
 sceneGroup:insert(background)
 
                                                             --Tested using button to allow user to shoot
